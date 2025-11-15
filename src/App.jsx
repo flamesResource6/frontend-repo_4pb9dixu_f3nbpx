@@ -663,7 +663,7 @@ export default function App() {
   const [bgMode, setBgMode] = useState('light') // 'light' | 'vibe'
 
   return (
-    <div className={`min-h-screen text-gray-900 transition-colors duration-700 ${bgMode === 'vibe' ? 'bg-gradient-to-b from-purple-50 via-fuchsia-50 to-white' : ''}`} style={bgMode === 'light' ? { backgroundColor: brand.base } : {}}>
+    <div className={`min-h-screen text-gray-900 transition-colors duration-700 ${bgMode === 'vibe' ? 'bg-gradient-to-b from-purple-600 via-purple-200 to-[#e7e8ea]' : ''}`} style={bgMode === 'light' ? { backgroundColor: brand.base } : {}}>
       <Navbar bgMode={bgMode} setBgMode={setBgMode} />
       <Hero />
       <FeatureGrid />
