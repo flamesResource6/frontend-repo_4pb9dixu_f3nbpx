@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Check,
   MessageSquare,
@@ -23,6 +23,7 @@ import {
   ArrowRight
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Lottie from 'lottie-react'
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
 
@@ -53,7 +54,28 @@ function Badge({ children }) {
   )
 }
 
-function Navbar() {
+function LottieLoader({ src, loop = true, className = '' }) {
+  const [data, setData] = useState(null)
+  useEffect(() => {
+    let mounted = true
+    async function load() {
+      try {
+        const res = await fetch(src)
+        if (!res.ok) return
+        const json = await res.json()
+        if (mounted) setData(json)
+      } catch (_) {}
+    }
+    load()
+    return () => { mounted = false }
+  }, [src])
+
+  if (!data) return <div className={`grid place-items-center ${className}`}><div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-600 border-t-transparent"/></div>
+  return <Lottie animationData={data} loop={loop} className={className} />
+}
+
+function Navbar({ bgMode, setBgMode }) {
+  const toggle = () => setBgMode(bgMode === 'light' ? 'vibe' : 'light')
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -80,14 +102,20 @@ function Navbar() {
           ))}
           <a href="/test" className="text-purple-700 hover:text-purple-800">Status</a>
         </nav>
-        <motion.a
-          href="#contact"
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:opacity-95 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm"
-        >
-          <Rocket size={16} /> Get Started
-        </motion.a>
+        <div className="flex items-center gap-2">
+          <button onClick={toggle} className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ring-1 ring-black/10 bg-white/80 hover:bg-white">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600"/>
+            {bgMode === 'light' ? 'Gradient BG' : 'Light BG'}
+          </button>
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:opacity-95 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm"
+          >
+            <Rocket size={16} /> Get Started
+          </motion.a>
+        </div>
       </div>
     </motion.header>
   )
@@ -147,33 +175,12 @@ function Hero() {
             </motion.div>
           </motion.div>
           <motion.div variants={fadeUp} className="relative">
-            <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-white to-white/40 border border-white/60 shadow-xl overflow-hidden"/>
-            <div className="absolute inset-0 p-6">
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="h-full w-full rounded-xl bg-white/60 backdrop-blur-md border border-white/70 shadow-inner p-4 grid grid-rows-3 gap-3"
-              >
-                {[1,2,3].map((row) => (
-                  <div key={row} className="grid grid-cols-3 gap-3">
-                    {[1,2,3].map((col) => (
-                      <motion.div
-                        key={col}
-                        initial={{ opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: (row*col)/20 }}
-                        className="rounded-lg p-3 bg-white/90 border border-black/5 shadow-sm"
-                      >
-                        <div className="h-3 w-20 bg-gray-200 rounded"/>
-                        <div className="mt-2 h-6 w-full rounded bg-gradient-to-r from-purple-100 to-fuchsia-100"/>
-                      </motion.div>
-                    ))}
-                  </div>
-                ))}
-              </motion.div>
+            <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-white to-white/40 border border-white/60 shadow-xl overflow-hidden grid place-items-center p-4">
+              <LottieLoader
+                // Using a hosted Lottie asset for sparkly hero
+                src="https://lottie.host/6c6b5f3f-ecdc-4d83-9f8d-1b1e0ed1958c/6cVfW0p4uT.json"
+                className="w-full h-full"
+              />
             </div>
           </motion.div>
         </div>
@@ -540,9 +547,12 @@ function Contact() {
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
       variants={stagger}
-      className="py-16 md:py-24 bg-white"
+      className="py-16 md:py-24 bg-white relative overflow-hidden"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute inset-0 opacity-40">
+        <LottieLoader src="https://lottie.host/2a1bff65-8d2c-4d1b-b5f0-8d1f2f3a6b0d/NH8iJ2hSxg.json" className="w-full h-full" />
+      </div>
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-8 items-start">
           <motion.div variants={fadeUp}>
             <Badge>Let’s talk</Badge>
@@ -609,10 +619,13 @@ function CTA() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6 }}
-      className="py-12"
+      className="py-12 relative overflow-hidden"
       style={{ backgroundColor: brand.base }}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
+        <LottieLoader src="https://lottie.host/9f8f0c8f-36c3-4b73-b7e6-1b2c3d4e5f6a/2n8aYqH8rQ.json" className="w-full h-full" />
+      </div>
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="rounded-2xl p-6 md:p-10 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-2xl md:text-3xl font-bold">Ready to launch rich messaging?</h3>
@@ -647,9 +660,11 @@ function Footer() {
 }
 
 export default function App() {
+  const [bgMode, setBgMode] = useState('light') // 'light' | 'vibe'
+
   return (
-    <div className="min-h-screen text-gray-900" style={{ backgroundColor: brand.base }}>
-      <Navbar />
+    <div className={`min-h-screen text-gray-900 transition-colors duration-700 ${bgMode === 'vibe' ? 'bg-gradient-to-b from-purple-50 via-fuchsia-50 to-white' : ''}`} style={bgMode === 'light' ? { backgroundColor: brand.base } : {}}>
+      <Navbar bgMode={bgMode} setBgMode={setBgMode} />
       <Hero />
       <FeatureGrid />
       <Integrations />
