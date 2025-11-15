@@ -104,7 +104,7 @@ function Navbar({ bgMode, setBgMode }) {
         </nav>
         <div className="flex items-center gap-2">
           <button onClick={toggle} className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ring-1 ring-black/10 bg-white/80 hover:bg-white">
-            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600"/>
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-r from-blue-600 to-sky-400"/>
             {bgMode === 'light' ? 'Gradient BG' : 'Light BG'}
           </button>
           <motion.a
@@ -663,7 +663,7 @@ export default function App() {
   const [bgMode, setBgMode] = useState('light') // 'light' | 'vibe'
 
   return (
-    <div className={`min-h-screen text-gray-900 transition-colors duration-700 ${bgMode === 'vibe' ? 'bg-gradient-to-b from-purple-600 via-purple-200 to-[#e7e8ea]' : ''}`} style={bgMode === 'light' ? { backgroundColor: brand.base } : {}}>
+    <div className={`min-h-screen text-gray-900 transition-colors duration-700 ${bgMode === 'vibe' ? 'bg-gradient-to-b from-blue-600 via-blue-200 to-[#e7e8ea]' : ''}`} style={bgMode === 'light' ? { backgroundColor: brand.base } : {}}>
       <Navbar bgMode={bgMode} setBgMode={setBgMode} />
       <Hero />
       <FeatureGrid />
